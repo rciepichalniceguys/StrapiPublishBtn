@@ -3,34 +3,12 @@ import pluginPkg from "../../package.json";
 import pluginId from "./pluginId";
 import Initializer from "./components/Initializer";
 import PluginIcon from "./components/PluginIcon";
-import PublishBtn from "./components/PublishBtn";
+import PublishBtn from "../../../publisher/admin/src/components/PublishBtn";
 
 const name = pluginPkg.strapi.name;
 
 export default {
   register(app) {
-    app.addMenuLink({
-      to: `/plugins/${pluginId}`,
-      icon: PluginIcon,
-      intlLabel: {
-        id: `${pluginId}.plugin.name`,
-        defaultMessage: name,
-      },
-      Component: async () => {
-        const component = await import(
-          /* webpackChunkName: "[request]" */ "./pages/App"
-        );
-
-        return component;
-      },
-      permissions: [
-        // Uncomment to set the permissions of the plugin here
-        // {
-        //   action: '', // the action name should be plugin::plugin-name.actionType
-        //   subject: null,
-        // },
-      ],
-    });
     app.registerPlugin({
       id: pluginId,
       initializer: Initializer,
@@ -38,9 +16,10 @@ export default {
       name,
     });
   },
+
   bootstrap(app) {
     app.injectContentManagerComponent("listView", "actions", {
-      name: "publish-all",
+      name: "publish",
       Component: PublishBtn,
     });
   },

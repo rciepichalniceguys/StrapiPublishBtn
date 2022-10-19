@@ -1,8 +1,8 @@
 module.exports = {
   // ...
-  "publish-all": {
+  publisher: {
     enabled: true,
-    resolve: "./src/plugins/publish-all",
+    resolve: "./src/plugins/publisher",
   },
   // ...
 };

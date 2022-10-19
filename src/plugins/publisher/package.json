@@ -1,12 +1,12 @@
 {
-  "name": "publish-all",
+  "name": "publisher",
   "version": "0.0.0",
   "description": "This is the description of the plugin.",
   "strapi": {
-    "name": "publish-all",
-    "description": "Description of Publish All plugin",
+    "name": "publisher",
+    "description": "Description of Publisher plugin",
     "kind": "plugin",
-    "displayName": "Publish All"
+    "displayName": "Publisher"
   },
   "dependencies": {},
   "author": {

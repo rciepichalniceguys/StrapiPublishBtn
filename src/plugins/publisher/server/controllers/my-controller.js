@@ -3,7 +3,7 @@
 module.exports = ({ strapi }) => ({
   index(ctx) {
     ctx.body = strapi
-      .plugin('publish-all')
+      .plugin('publisher')
       .service('myService')
       .getWelcomeMessage();
   },
