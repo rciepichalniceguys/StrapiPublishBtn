@@ -26,4 +26,13 @@ module.exports = [
       auth: false,
     },
   },
+  {
+    method: "GET",
+    path: "/unpublish/:id",
+    handler: "publish.unpublishIds",
+    config: {
+      policies: [],
+      auth: false,
+    },
+  },
 ];

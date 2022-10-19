@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@strapi/design-system/Button";
 
 const URL = "http://localhost:1337/publisher/publishall";
-const URL_IDS = "http://localhost:1337/publisher/publish";
+const URL_Publish = "http://localhost:1337/publisher/publish";
+const URL_Unpublish = "http://localhost:1337/publisher/unpublish";
 
 const PublishBtn = () => {
   const [checkedIDs, setCheckedIDs] = useState([]);
@@ -37,8 +38,13 @@ const PublishBtn = () => {
     location.reload();
   };
 
-  const publishByIds = async (id) => {
-    const res = await fetch(`${URL_IDS}/${id}`);
+  const publishByIds = async (id, type) => {
+    if (type === "PUBLISH") {
+      const res = await fetch(`${URL_Publish}/${id}`);
+      location.reload();
+      return;
+    }
+    const res = await fetch(`${URL_Unpublish}/${id}`);
     location.reload();
   };
 
@@ -47,7 +53,12 @@ const PublishBtn = () => {
   };
   const handlePublishIds = () => {
     checkedIDs.map((id) => {
-      publishByIds(id);
+      publishByIds(id, "PUBLISH");
+    });
+  };
+  const handleUnpublishIds = () => {
+    checkedIDs.map((id) => {
+      publishByIds(id, "UNPUBLISH");
     });
   };
 
@@ -67,6 +78,14 @@ const PublishBtn = () => {
           disabled={checkedIDs.length > 0 ? false : true}
         >
           Publish IDs
+        </Button>
+      )}
+      {!!checkedIDs.length > 0 && (
+        <Button
+          onClick={handleUnpublishIds}
+          disabled={checkedIDs.length > 0 ? false : true}
+        >
+          Unpublish IDs
         </Button>
       )}
     </>

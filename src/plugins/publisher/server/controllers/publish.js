@@ -21,4 +21,14 @@ module.exports = ({ strapi }) => ({
       ctx.throw(500, err);
     }
   },
+  async unpublishIds(ctx) {
+    try {
+      return await strapi
+        .plugin("publisher")
+        .service("publishService")
+        .unpublishIds(ctx.params.id);
+    } catch (err) {
+      ctx.throw(500, err);
+    }
+  },
 });

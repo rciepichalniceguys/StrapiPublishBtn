@@ -39,4 +39,20 @@ module.exports = ({ strapi }) => ({
       }
     );
   },
+  async unpublishIds(id) {
+    const articleToPublish = await strapi.entityService.findOne(
+      "api::article.article",
+      id
+    );
+
+    return strapi.entityService.update(
+      "api::article.article",
+      articleToPublish.id,
+      {
+        data: {
+          publishedAt: null,
+        },
+      }
+    );
+  },
 });
