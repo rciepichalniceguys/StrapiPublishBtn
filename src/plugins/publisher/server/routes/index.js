@@ -9,8 +9,8 @@ module.exports = [
     },
   },
   {
-    method: "GET",
-    path: "/publish/:id",
+    method: "PUT",
+    path: "/publish",
     handler: "publish.publishIds",
     config: {
       policies: [],
@@ -18,8 +18,8 @@ module.exports = [
     },
   },
   {
-    method: "GET",
-    path: "/unpublish/:id",
+    method: "PUT",
+    path: "/unpublish",
     handler: "publish.unpublishIds",
     config: {
       policies: [],

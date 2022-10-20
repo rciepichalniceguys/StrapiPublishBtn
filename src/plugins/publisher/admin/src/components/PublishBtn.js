@@ -1,12 +1,44 @@
 import React, { useState, useEffect, useRef } from "react";
+import { request } from "@strapi/helper-plugin";
 import { Button } from "@strapi/design-system/Button";
-
-const URL = "http://localhost:1337/publisher/publishall";
-const URL_Publish = "http://localhost:1337/publisher/publish";
-const URL_Unpublish = "http://localhost:1337/publisher/unpublish";
 
 const PublishBtn = () => {
   const [checkedIDs, setCheckedIDs] = useState([]);
+
+  const [publishedIDs, setPublishedIDs] = useState([]);
+  const [draftIDs, setDraftIDs] = useState([]);
+
+  const getPublishedIDs = (e) => {
+    const published = [];
+    const draft = [];
+
+    document
+      .querySelectorAll('input[type="checkbox"]:checked')
+      .forEach((el) => {
+        const el2 = el.parentElement.parentElement.querySelectorAll(
+          'td[aria-colindex="6"]>div>span'
+        )[0].textContent;
+        if (el2 === "Draft") {
+          draft.push(
+            el.parentElement.parentElement.querySelectorAll(
+              'td[aria-colindex="2"] > span'
+            )[0].textContent
+          );
+          setDraftIDs(draft);
+        } else if (el2 === "Published") {
+          published.push(
+            el.parentElement.parentElement.querySelectorAll(
+              'td[aria-colindex="2"] > span'
+            )[0].textContent
+          );
+          setPublishedIDs(published);
+        } else {
+          return;
+        }
+      });
+    console.log("Published:", published);
+    console.log("Draft:", draft);
+  };
 
   const getCheckedIDs = (e) => {
     const ids = [];
@@ -33,61 +65,35 @@ const PublishBtn = () => {
     setCheckedIDs(ids);
   };
 
-  const publishAll = async () => {
-    const res = await fetch(URL);
-    location.reload();
-  };
-
-  const publishByIds = async (id, type) => {
-    if (type === "PUBLISH") {
-      const res = await fetch(`${URL_Publish}/${id}`, {
-        method: "GET",
-        body: `${checkedIDs}`,
+  const handlePublish = async (option) => {
+    if (option === "PUBLISH") {
+      await request(`/publisher/publish`, {
+        method: "PUT",
+        body: { data: draftIDs },
       });
       location.reload();
       return;
     }
-    const res = await fetch(`${URL_Unpublish}/${id}`);
+    await request(`/publisher/unpublish`, {
+      method: "PUT",
+      body: { data: publishedIDs },
+    });
     location.reload();
   };
 
-  const handlePublishAll = () => {
-    publishAll();
-  };
-  const handlePublishIds = () => {
-    checkedIDs.map((id) => {
-      publishByIds(id, "PUBLISH");
-    });
-  };
-  const handleUnpublishIds = () => {
-    checkedIDs.map((id) => {
-      publishByIds(id, "UNPUBLISH");
-    });
-  };
-
   useEffect(() => {
-    document.addEventListener("click", getCheckedIDs, true);
+    document.addEventListener("click", getPublishedIDs, true);
     // document.addEventListener("click", checkFunc, true);
-    return () => window.removeEventListener("click", getCheckedIDs);
+    return () => window.removeEventListener("click", getPublishedIDs);
   }, []);
 
   return (
     <>
-      {/* <Button onClick={handlePublishAll}>Publish All</Button> */}
-
-      {!!checkedIDs.length > 0 && (
-        <Button
-          onClick={handlePublishIds}
-          disabled={checkedIDs.length > 0 ? false : true}
-        >
-          Publish IDs
-        </Button>
+      {!!(draftIDs.length > 0 || publishedIDs.length > 0) && (
+        <Button onClick={() => handlePublish("PUBLISH")}>Publish IDs</Button>
       )}
-      {!!checkedIDs.length > 0 && (
-        <Button
-          onClick={handleUnpublishIds}
-          disabled={checkedIDs.length > 0 ? false : true}
-        >
+      {!!(draftIDs.length > 0 || publishedIDs.length > 0) && (
+        <Button onClick={() => handlePublish("UNPUBLISH")}>
           Unpublish IDs
         </Button>
       )}
