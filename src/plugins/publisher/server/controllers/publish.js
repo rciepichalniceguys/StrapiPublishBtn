@@ -12,6 +12,7 @@ module.exports = ({ strapi }) => ({
     }
   },
   async publishIds(ctx) {
+    console.log(ctx);
     try {
       return await strapi
         .plugin("publisher")

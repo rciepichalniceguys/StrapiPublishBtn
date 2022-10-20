@@ -21,7 +21,6 @@ module.exports = ({ strapi }) => ({
         });
       })
     );
-    // return `Autopublish ran at ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}`;
   },
   async publishIds(id) {
     const articleToPublish = await strapi.entityService.findOne(
@@ -39,6 +38,23 @@ module.exports = ({ strapi }) => ({
       }
     );
   },
+  async publishIds(id) {
+    const articleToPublish = await strapi.entityService.findOne(
+      "api::article.article",
+      id
+    );
+
+    return strapi.entityService.update(
+      "api::article.article",
+      articleToPublish.id,
+      {
+        data: {
+          publishedAt: new Date(),
+        },
+      }
+    );
+  },
+
   async unpublishIds(id) {
     const articleToPublish = await strapi.entityService.findOne(
       "api::article.article",

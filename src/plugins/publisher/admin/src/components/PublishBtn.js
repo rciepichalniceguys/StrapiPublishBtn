@@ -40,7 +40,10 @@ const PublishBtn = () => {
 
   const publishByIds = async (id, type) => {
     if (type === "PUBLISH") {
-      const res = await fetch(`${URL_Publish}/${id}`);
+      const res = await fetch(`${URL_Publish}/${id}`, {
+        method: "GET",
+        body: `${checkedIDs}`,
+      });
       location.reload();
       return;
     }
