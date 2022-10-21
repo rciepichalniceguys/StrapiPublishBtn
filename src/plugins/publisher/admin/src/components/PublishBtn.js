@@ -94,10 +94,10 @@ const PublishBtn = () => {
 
   return (
     <>
-      {!!(draftIDs.length > 0 || publishedIDs.length > 0) && (
+      {!!draftIDs.length > 0 && (
         <Button onClick={() => handlePublish("PUBLISH")}>Publish IDs</Button>
       )}
-      {!!(draftIDs.length > 0 || publishedIDs.length > 0) && (
+      {!!publishedIDs.length > 0 && (
         <Button onClick={() => handlePublish("UNPUBLISH")}>
           Unpublish IDs
         </Button>
