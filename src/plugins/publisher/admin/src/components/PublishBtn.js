@@ -1,80 +1,87 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { request } from "@strapi/helper-plugin";
 import { Button } from "@strapi/design-system/Button";
 
 const PublishBtn = () => {
-  const [checkedIDs, setCheckedIDs] = useState([]);
-
   const [publishedIDs, setPublishedIDs] = useState([]);
   const [draftIDs, setDraftIDs] = useState([]);
 
   const getPublishedIDs = (e) => {
     const published = [];
     const draft = [];
-
+    if (e.target.getAttribute("aria-label") === "Select all entries") {
+      console.log("Select all entries ~ Clicked");
+      if (!e.target.checked) {
+        setDraftIDs([]);
+        setPublishedIDs([]);
+        return;
+      }
+      document.querySelectorAll('input[type="checkbox"]').forEach((el) => {
+        const spanNode = el.parentElement.parentElement.querySelectorAll(
+          'td[aria-colindex="6"]>div>span'
+        );
+        if (spanNode.length) {
+          if (spanNode[0].textContent === "Draft") {
+            draft.push(
+              el.parentElement.parentElement.querySelectorAll(
+                'td[aria-colindex="2"] > span'
+              )[0].textContent
+            );
+            setDraftIDs(draft);
+          }
+          if (spanNode[0].textContent === "Published") {
+            published.push(
+              el.parentElement.parentElement.querySelectorAll(
+                'td[aria-colindex="2"] > span'
+              )[0].textContent
+            );
+            setPublishedIDs(published);
+          }
+        }
+      });
+      console.log("Published:", published);
+      console.log("Draft:", draft);
+      return;
+    }
     document
       .querySelectorAll('input[type="checkbox"]:checked')
       .forEach((el) => {
-        const el2 = el.parentElement.parentElement.querySelectorAll(
+        const spanNode = el.parentElement.parentElement.querySelectorAll(
           'td[aria-colindex="6"]>div>span'
-        )[0].textContent;
-        if (el2 === "Draft") {
-          draft.push(
-            el.parentElement.parentElement.querySelectorAll(
-              'td[aria-colindex="2"] > span'
-            )[0].textContent
-          );
-          setDraftIDs(draft);
-        } else if (el2 === "Published") {
-          published.push(
-            el.parentElement.parentElement.querySelectorAll(
-              'td[aria-colindex="2"] > span'
-            )[0].textContent
-          );
-          setPublishedIDs(published);
-        } else {
-          return;
+        );
+        if (spanNode.length) {
+          if (spanNode[0].textContent === "Draft") {
+            draft.push(
+              el.parentElement.parentElement.querySelectorAll(
+                'td[aria-colindex="2"] > span'
+              )[0].textContent
+            );
+            setDraftIDs(draft);
+          }
+          if (spanNode[0].textContent === "Published") {
+            published.push(
+              el.parentElement.parentElement.querySelectorAll(
+                'td[aria-colindex="2"] > span'
+              )[0].textContent
+            );
+            setPublishedIDs(published);
+          }
         }
       });
     console.log("Published:", published);
     console.log("Draft:", draft);
   };
 
-  const getCheckedIDs = (e) => {
-    const ids = [];
-    if (e.target.getAttribute("aria-label") === "Select all entries") {
-      if (!e.target.checked) {
-        setCheckedIDs([]);
-        return;
-      }
-      document.querySelectorAll('input[type="checkbox"]').forEach((c) => {
-        const elements = c.parentElement.parentElement.querySelectorAll(
-          'td[aria-colindex="2"] > span'
-        );
-        if (elements.length > 0) ids.push(elements[0].textContent);
-      });
-      setCheckedIDs(ids);
-      return;
-    }
-    document.querySelectorAll('input[type="checkbox"]:checked').forEach((c) => {
-      const elements = c.parentElement.parentElement.querySelectorAll(
-        'td[aria-colindex="2"] > span'
-      );
-      if (elements.length > 0) ids.push(elements[0].textContent);
-    });
-    setCheckedIDs(ids);
-  };
-
   const handlePublish = async (option) => {
     if (option === "PUBLISH") {
-      await request(`/publisher/publish`, {
+      const res = await request(`/publisher/publish`, {
         method: "PUT",
         body: { data: draftIDs },
       });
       location.reload();
       return;
     }
-    await request(`/publisher/unpublish`, {
+    const res = await request(`/publisher/unpublish`, {
       method: "PUT",
       body: { data: publishedIDs },
     });
