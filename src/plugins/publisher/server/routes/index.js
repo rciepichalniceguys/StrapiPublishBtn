@@ -1,14 +1,5 @@
 module.exports = [
   {
-    method: "GET",
-    path: "/publishall",
-    handler: "publish.publisher",
-    config: {
-      policies: [],
-      auth: false,
-    },
-  },
-  {
     method: "PUT",
     path: "/publish",
     handler: "publish.publishIds",

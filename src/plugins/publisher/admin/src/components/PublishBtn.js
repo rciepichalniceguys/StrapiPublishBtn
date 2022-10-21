@@ -6,11 +6,14 @@ const PublishBtn = () => {
   const [publishedIDs, setPublishedIDs] = useState([]);
   const [draftIDs, setDraftIDs] = useState([]);
 
+  const contentName = window.location.pathname.match(
+    /api::[a-z\-]*.[a-z\-]*/g
+  )[0];
+
   const getPublishedIDs = (e) => {
     const published = [];
     const draft = [];
     if (e.target.getAttribute("aria-label") === "Select all entries") {
-      console.log("Select all entries ~ Clicked");
       if (!e.target.checked) {
         setDraftIDs([]);
         setPublishedIDs([]);
@@ -39,8 +42,6 @@ const PublishBtn = () => {
           }
         }
       });
-      console.log("Published:", published);
-      console.log("Draft:", draft);
       return;
     }
     document
@@ -68,30 +69,27 @@ const PublishBtn = () => {
           }
         }
       });
-    console.log("Published:", published);
-    console.log("Draft:", draft);
   };
 
   const handlePublish = async (option) => {
     if (option === "PUBLISH") {
       const res = await request(`/publisher/publish`, {
         method: "PUT",
-        body: { data: draftIDs },
+        body: { data: draftIDs, contentName },
       });
       location.reload();
       return;
     }
     const res = await request(`/publisher/unpublish`, {
       method: "PUT",
-      body: { data: publishedIDs },
+      body: { data: publishedIDs, contentName },
     });
     location.reload();
   };
 
   useEffect(() => {
     document.addEventListener("click", getPublishedIDs, true);
-    // document.addEventListener("click", checkFunc, true);
-    return () => window.removeEventListener("click", getPublishedIDs);
+    return () => document.removeEventListener("click", getPublishedIDs);
   }, []);
 
   return (

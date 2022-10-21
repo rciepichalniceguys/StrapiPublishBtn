@@ -6,9 +6,9 @@ import {
   ModalLayout,
   ModalBody,
   ModalHeader,
-  ModalFooter,
 } from "@strapi/design-system/ModalLayout";
 import { Alert } from "@strapi/design-system/Alert";
+import { request } from "@strapi/helper-plugin";
 import "./styles.css";
 
 const URL = "http://localhost:1337/api/categories";
@@ -52,22 +52,32 @@ const CategoryBtn = () => {
     setCheckedIDs(ids);
   };
 
+  const testRequest = async () => {
+    const res = await request(`/api/categories`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("Res", res);
+    const categoriesList = res.data;
+    console.log("List", categoriesList);
+  };
+
   useEffect(() => {
     const getCategories = async () => {
-      const res = await fetch(URL, {
+      const res = await request(`/api/categories`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      const data = await res.json();
-      const categoriesList = data.data;
+      const categoriesList = res.data;
       setCategories(categoriesList);
     };
     getCategories();
     document.addEventListener("click", getCheckedIDs, true);
-    // document.addEventListener("click", checkFunc, true);
-    return () => window.removeEventListener("click", getCheckedIDs);
+    return () => document.removeEventListener("click", getCheckedIDs);
   }, []);
 
   useEffect(() => {
