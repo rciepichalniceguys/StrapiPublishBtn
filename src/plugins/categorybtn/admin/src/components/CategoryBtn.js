@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@strapi/design-system/Button";
 import SelectBox from "./SelectBox";
 import { Typography } from "@strapi/design-system/Typography";
+import { Popover } from "@strapi/design-system/Popover";
 import {
   ModalLayout,
   ModalBody,
@@ -9,6 +10,7 @@ import {
 } from "@strapi/design-system/ModalLayout";
 import { Alert } from "@strapi/design-system/Alert";
 import { request } from "@strapi/helper-plugin";
+import { useLocalStorage } from "../utils/hooks";
 import "./styles.css";
 
 const token =
@@ -18,18 +20,29 @@ const CategoryBtn = () => {
   const [openChoicesPopover, setOpenChoicesPopover] = useState(false);
   const [categories, setCategories] = useState([]);
   const [checkedIDs, setCheckedIDs] = useState([]);
+  const [isPopupVisible, setIsPopupVisible] = useLocalStorage(
+    "isCategoryPopupVisible",
+    false
+  );
+  const [responseStatus, setResponseStatus] = useLocalStorage(
+    "categoryResponseStatus",
+    null
+  );
+
   const [isCategoriesUpdated, setIsCategoriesUpdated] = useState({
     show: false,
     status: 500,
   });
 
   const buttonRef = useRef(null);
+  // Determine visibility of Change Category
   const contentName = window.location.pathname
     .match(/api::[a-z\-]*.[a-z\-]*/g)[0]
     .includes("article");
   if (!contentName) {
     return <div></div>;
   }
+  //
   const getCheckedIDs = (e) => {
     const ids = [];
     if (e.target.getAttribute("aria-label") === "Select all entries") {
@@ -57,7 +70,6 @@ const CategoryBtn = () => {
 
   useEffect(() => {
     if (!contentName) return;
-
     const getCategories = async () => {
       const res = await request(`/api/categories`, {
         method: "GET",
@@ -74,34 +86,31 @@ const CategoryBtn = () => {
   }, []);
 
   useEffect(() => {
-    if (isCategoriesUpdated.status >= 200 && isCategoriesUpdated.status < 300) {
-      location.reload();
-    }
-  }, [isCategoriesUpdated.status]);
+    const timeout = setTimeout(() => {
+      setIsPopupVisible(false);
+      setResponseStatus(null);
+    }, 2000);
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [isPopupVisible]);
 
   return (
     <>
-      {isCategoriesUpdated.show &&
-        (isCategoriesUpdated.status >= 200 &&
-        isCategoriesUpdated.status < 300 ? (
-          <Alert
-            closeLabel="Categories updated."
-            onClose={() => setIsCategoriesUpdated(false)}
-            variant="success"
-            style={{}}
+      {isPopupVisible && (
+        <Popover source={buttonRef} spacing={10} placement={"top"} padding={2}>
+          <h2
+            style={{
+              color: responseStatus === 200 ? "#C6F0C2" : "#F5C0B8",
+            }}
           >
-            Categories updated. (Status: {isCategoriesUpdated.status})
-          </Alert>
-        ) : (
-          <Alert
-            closeLabel="Some problem occured."
-            onClose={() => setIsCategoriesUpdated(false)}
-            variant="danger"
-            style={{}}
-          >
-            Some problem occured. Status: {isCategoriesUpdated.status}
-          </Alert>
-        ))}
+            {responseStatus === 200
+              ? "Categories updated."
+              : "Some problem occured."}
+          </h2>
+        </Popover>
+      )}
+
       <Button
         variant="secondary"
         onClick={() => setOpenChoicesPopover(true)}
@@ -131,7 +140,8 @@ const CategoryBtn = () => {
               categories={categories}
               ids={checkedIDs}
               setOpenChoicesPopover={setOpenChoicesPopover}
-              setIsCategoriesUpdated={setIsCategoriesUpdated}
+              setIsPopupVisible={setIsPopupVisible}
+              setResponseStatus={setResponseStatus}
             />
           </ModalBody>
         </ModalLayout>

@@ -10,7 +10,8 @@ const SelectBox = ({
   categories,
   ids,
   setOpenChoicesPopover,
-  setIsCategoriesUpdated,
+  setIsPopupVisible,
+  setResponseStatus,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categoryTitle, setCategoryTitle] = useState(null);
@@ -28,15 +29,24 @@ const SelectBox = ({
   };
 
   const updateCategory = async (id) => {
-    const req = await fetch(
+    const res = await fetch(
       `http://localhost:1337/api/articles/${id}?populate[category][populate][0]=`,
-      headers
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          data: {
+            category: selectedCategory,
+          },
+        }),
+      }
     );
-    console.log(req);
-    if (req.status) {
-      console.log("Status " + req.status);
-    }
-    setIsCategoriesUpdated({ show: true, status: req.status });
+    console.log(res);
+    setIsPopupVisible(true);
+    setResponseStatus(res.status);
   };
 
   const handleSubmit = (e) => {
@@ -45,6 +55,7 @@ const SelectBox = ({
       updateCategory(id);
     });
     setOpenChoicesPopover(false);
+    location.reload();
   };
 
   useEffect(() => {

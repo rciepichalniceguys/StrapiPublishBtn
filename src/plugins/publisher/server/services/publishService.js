@@ -16,9 +16,17 @@ module.exports = ({ strapi }) => ({
           },
         });
       });
-      return (ctx.response.status = 200);
+      ctx.type = "Application/json";
+      if (ids.length === 1) {
+        ctx.body = { message: "Item published.", status: 200 };
+      }
+      ctx.body = { message: "Items published.", status: 200 };
+      return;
     }
-    return (ctx.response.status = 500);
+    ctx.status = 500;
+    ctx.type = "Application/json";
+    ctx.body = { message: "Some problem occured." };
+    return;
   },
 
   async unpublishIds(ctx) {
@@ -36,8 +44,16 @@ module.exports = ({ strapi }) => ({
           },
         });
       });
-      return (ctx.response.status = 200);
+      ctx.type = "Application/json";
+      if (ids.length === 1) {
+        ctx.body = { message: "Item unpublished.", status: 200 };
+      }
+      ctx.body = { message: "Items unpublished.", status: 200 };
+      return;
     }
-    return (ctx.response.status = 500);
+    ctx.status = 500;
+    ctx.type = "Application/json";
+    ctx.body = { message: "Some problem occured." };
+    return;
   },
 });
