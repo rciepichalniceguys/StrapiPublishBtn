@@ -17,74 +17,61 @@ const PublishBtn = () => {
     /api::[a-z\-]*.[a-z\-]*/g
   )[0];
 
-  const getPublishedIDs = (e) => {
+  const getColumnNumber = (header) => {
+    const param = document
+      .querySelectorAll(`button[label="${header}"]`)[0]
+      .parentElement.parentElement.parentElement.getAttribute("aria-colindex");
+    return param;
+  };
+
+  const sortByStatus = (items, column) => {
     const published = [];
     const draft = [];
-    if (e.target.getAttribute("aria-label") === "Select all entries") {
-      if (!e.target.checked) {
-        setDraftIDs([]);
-        setPublishedIDs([]);
-        return;
-      }
-      document.querySelectorAll('input[type="checkbox"]').forEach((el) => {
-        const spanNode = el.parentElement.parentElement.querySelectorAll(
-          'td[aria-colindex="6"]>div>span'
-        );
-        if (spanNode.length) {
-          if (spanNode[0].textContent === "Draft") {
-            draft.push(
-              el.parentElement.parentElement.querySelectorAll(
-                'td[aria-colindex="2"] > span'
-              )[0].textContent
-            );
-            setDraftIDs(draft);
-          }
-          if (spanNode[0].textContent === "Published") {
-            published.push(
-              el.parentElement.parentElement.querySelectorAll(
-                'td[aria-colindex="2"] > span'
-              )[0].textContent
-            );
-            setPublishedIDs(published);
-          }
-        }
-      });
-      return;
-    }
-    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    const checked = document.querySelectorAll('input[type="checkbox"]:checked');
-    if (checked.length === 0) {
-      setDraftIDs([]);
-      setPublishedIDs([]);
-      return;
-    }
-    checked.forEach((el) => {
-      // state -> th
-      const spanNode = el.parentElement.parentElement.querySelectorAll(
-        'td[aria-colindex="6"]>div>span'
+    items.forEach((item) => {
+      const spanNode = item.parentElement.parentElement.querySelectorAll(
+        `td[aria-colindex="${column}"]>div>span`
       );
       if (spanNode.length) {
         if (spanNode[0].textContent === "Draft") {
           draft.push(
-            el.parentElement.parentElement.querySelectorAll(
-              'td[aria-colindex="2"] > span'
+            item.parentElement.parentElement.querySelectorAll(
+              `td[aria-colindex="${getColumnNumber("id")}"] > span`
             )[0].textContent
           );
           setDraftIDs(draft);
         }
         if (spanNode[0].textContent === "Published") {
           published.push(
-            el.parentElement.parentElement.querySelectorAll(
-              'td[aria-colindex="2"] > span'
+            item.parentElement.parentElement.querySelectorAll(
+              `td[aria-colindex="${getColumnNumber("id")}"] > span`
             )[0].textContent
           );
           setPublishedIDs(published);
         }
+      }
+    });
+  };
+
+  const handleClick = (e) => {
+    const stateColumnNumber = getColumnNumber("State");
+
+    if (e.target.getAttribute("aria-label") === "Select all entries") {
+      if (!e.target.checked) {
+        setDraftIDs([]);
+        setPublishedIDs([]);
         return;
       }
+      const unchecked = document.querySelectorAll('input[type="checkbox"]');
+      sortByStatus(unchecked, stateColumnNumber);
+      return;
+    }
+    const checked = document.querySelectorAll('input[type="checkbox"]:checked');
+    if (checked.length === 0) {
       setDraftIDs([]);
       setPublishedIDs([]);
-    });
+      return;
+    }
+    sortByStatus(checked, stateColumnNumber);
   };
 
   const handlePublish = async (option) => {
@@ -108,8 +95,8 @@ const PublishBtn = () => {
   };
 
   useEffect(() => {
-    document.addEventListener("click", getPublishedIDs, true);
-    return () => document.removeEventListener("click", getPublishedIDs);
+    document.addEventListener("click", handleClick, true);
+    return () => document.removeEventListener("click", handleClick);
   }, []);
 
   useEffect(() => {

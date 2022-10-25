@@ -8,7 +8,6 @@ import {
   ModalBody,
   ModalHeader,
 } from "@strapi/design-system/ModalLayout";
-import { Alert } from "@strapi/design-system/Alert";
 import { request } from "@strapi/helper-plugin";
 import { useLocalStorage } from "../utils/hooks";
 import "./styles.css";
@@ -43,6 +42,13 @@ const CategoryBtn = () => {
     return <div></div>;
   }
   //
+  const getColumnNumber = (header) => {
+    const param = document
+      .querySelectorAll(`button[label="${header}"]`)[0]
+      .parentElement.parentElement.parentElement.getAttribute("aria-colindex");
+    return param;
+  };
+
   const getCheckedIDs = (e) => {
     const ids = [];
     if (e.target.getAttribute("aria-label") === "Select all entries") {
@@ -52,7 +58,7 @@ const CategoryBtn = () => {
       }
       document.querySelectorAll('input[type="checkbox"]').forEach((c) => {
         const elements = c.parentElement.parentElement.querySelectorAll(
-          'td[aria-colindex="2"] > span'
+          `td[aria-colindex="${getColumnNumber("id")}"] > span`
         );
         if (elements.length > 0) ids.push(elements[0].textContent);
       });
@@ -61,7 +67,7 @@ const CategoryBtn = () => {
     }
     document.querySelectorAll('input[type="checkbox"]:checked').forEach((c) => {
       const elements = c.parentElement.parentElement.querySelectorAll(
-        'td[aria-colindex="2"] > span'
+        `td[aria-colindex="${getColumnNumber("id")}"] > span`
       );
       if (elements.length > 0) ids.push(elements[0].textContent);
     });
@@ -110,15 +116,16 @@ const CategoryBtn = () => {
           </h2>
         </Popover>
       )}
-
-      <Button
-        variant="secondary"
-        onClick={() => setOpenChoicesPopover(true)}
-        disabled={checkedIDs.length > 0 ? false : true}
-        ref={buttonRef}
-      >
-        Change category
-      </Button>
+      {categories && (
+        <Button
+          variant="secondary"
+          onClick={() => setOpenChoicesPopover(true)}
+          disabled={checkedIDs.length > 0 ? false : true}
+          ref={buttonRef}
+        >
+          Change category
+        </Button>
+      )}
       {openChoicesPopover && (
         <ModalLayout
           onClose={() => setOpenChoicesPopover((prev) => !prev)}
@@ -126,12 +133,7 @@ const CategoryBtn = () => {
           className={`categoryModal`}
         >
           <ModalHeader>
-            <Typography
-              fontWeight="bold"
-              textColor="neutral800"
-              as="h2"
-              id="title"
-            >
+            <Typography fontWeight="bold" as="h2" id="title">
               Choose a category:
             </Typography>
           </ModalHeader>
