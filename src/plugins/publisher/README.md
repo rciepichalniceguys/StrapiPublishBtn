@@ -1,3 +1,3 @@
 # Strapi plugin publisher
 
-A quick description of publisher.
+A plugin that allows publish and unpublish checked items.

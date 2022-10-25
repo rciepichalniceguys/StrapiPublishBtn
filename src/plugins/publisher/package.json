@@ -1,10 +1,10 @@
 {
   "name": "publisher",
-  "version": "0.0.0",
-  "description": "This is the description of the plugin.",
+  "version": "1.0.0",
+  "description": "A plugin that allows publish and unpublish checked items.",
   "strapi": {
     "name": "publisher",
-    "description": "Description of Publisher plugin",
+    "description": "A plugin that allows publish and unpublish checked items.",
     "kind": "plugin",
     "displayName": "Publisher"
   },
