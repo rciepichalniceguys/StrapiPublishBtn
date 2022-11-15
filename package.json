@@ -15,7 +15,8 @@
     "@strapi/plugin-users-permissions": "4.4.3",
     "@strapi/strapi": "4.4.3",
     "better-sqlite3": "7.4.6",
-    "node-schedule": "^2.1.0"
+    "node-schedule": "^2.1.0",
+    "strapi-plugin-slugify": "^2.3.1"
   },
   "author": {
     "name": "A Strapi developer"

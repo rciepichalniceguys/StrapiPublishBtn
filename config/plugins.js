@@ -8,5 +8,16 @@ module.exports = {
     enabled: true,
     resolve: "./src/plugins/categorybtn",
   },
+  slugify: {
+    enabled: true,
+    config: {
+      contentTypes: {
+        article: {
+          field: "slug",
+          references: "title",
+        },
+      },
+    },
+  },
   // ...
 };
