@@ -20,12 +20,6 @@
       "type": "datetime",
       "default": "2022-10-01T22:00:00.000Z",
       "private": true
-    },
-    "articles": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::article.article",
-      "mappedBy": "category"
     }
   }
 }
